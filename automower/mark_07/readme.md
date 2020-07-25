@@ -12,6 +12,8 @@ To see the likeliest candidates for each lawn size, run this SQL:
 
 `select * from modelinfo where average_run_length < perfect_run_length * 2 order by lawn_size;`
 
+As of the time of writing, there are no hyperparameter settings that learned how to mow lawn sizes larger than 12x12.
+
 You can execute the SQL while **iterate_learn_test.py** is running.
 
 I have a fairly beefy machine, and it takes ~3 days to run through all of the hyperparameter combinations.
