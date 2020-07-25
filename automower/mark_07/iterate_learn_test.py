@@ -7,13 +7,13 @@ env = BlobEnv()
 qlearning = QLearning(env = env)
 agent_testing = AgentTesting(env = env)
 
-agent_testing.set_number_of_runs(5)
+agent_testing.set_number_of_runs(5) # Number of times to draw the mower and lawn; has no bearing on learning
 agent_testing.set_render_waitkey(1)  # 0 draws an empty lawn, but is as fast as possible
-agent_testing.set_debug_render(False)
+agent_testing.set_debug_render(True) # True: show the lawn; False: do not show the lawn
 
 # size 7: edv=0.99, lr=0.9999, ep=3000, d=0.999
 # size 10: edv=0.99, lr=0.0.99999, ep=2000, d=0.99
-lawn_size_values = [7, 10, 12, 15, 18] # best: 10
+lawn_size_values = [5, 7, 10, 12, 15, 18] # best: 10
 epsilon_decay_values = [0.99, 0.995, 0.999] # best: 0.99
 learning_rate_decay_values = [0.999, 0.9999, 0.99999, 0.999999, 0.9999999] # best: 0.99999
 episode_length_values = [1_000, 2_000, 3_000] # best: 2000
