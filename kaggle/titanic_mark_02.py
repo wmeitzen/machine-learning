@@ -1,6 +1,7 @@
 # - Predict fate (live/die) of passengers on the Titanic
 # Titanic tutorial submission achieves 77.5% accuracy
 # I've gotten to 88.9% accuracy
+# - Disclaimers:
 # I'm only using the training dataset, not the entire dataset (training+test)
 # I'm not sure if my prediction code excludes the Survived column
 #   (it's not in the features array)
