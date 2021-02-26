@@ -3,9 +3,11 @@ Result of stepping through the tutorial from https://machinelearningmastery.com/
 
 I hope I included everything you need to see the end result, along with a few real-world test images and a misclassified image (e.g., `wolf.png`).
 
-1. Use 7zip to decompress `final_model_vgg16_transfer_zip.001` - `final_model_vgg16_transfer_zip.008` into `final_model_vgg16_transfer.h5`.
-
-1. Run python script dogs_vs_cats.py
+1. Edit python script dogs_vs_cats.py
+2. Change `create_final_model_vgg16_transfer_h5_file = False` to `create_final_model_vgg16_transfer_h5_file = True`
+3. Run python script -- will take 15-20 minutes on good hardware
+4. Output should be similar to below
+5. Change `create_final_model_vgg16_transfer_h5_file = True` to `create_final_model_vgg16_transfer_h5_file = False`
 
 My favorites are the dogs wearing ears and the stuffed animal.
 
