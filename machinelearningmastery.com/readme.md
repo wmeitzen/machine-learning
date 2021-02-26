@@ -5,12 +5,6 @@ Run python script dogs_vs_cats.py
 
 Output:
 ```
-Model type: vgg16_transfer
-
-Found 18697 images belonging to 2 classes.
-Found 6303 images belonging to 2 classes.
-> 97.731
-> 
 model_type: vgg16_transfer
 image filename: unseen_sample_image_1.jpg
 model type filename: final_model_vgg16_transfer.h5
