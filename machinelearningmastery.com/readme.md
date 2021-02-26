@@ -1,7 +1,7 @@
 
 Result of stepping through the tutorial from https://machinelearningmastery.com/how-to-develop-a-convolutional-neural-network-to-classify-photos-of-dogs-and-cats/
 
-I hope I included everything you need to see the end result, along with a few real-world test images and a failure (e.g., `wolf.png`).
+I hope I included everything you need to see the end result, along with a few real-world test images and a misclassified image (e.g., `wolf.png`).
 
 1. Use 7zip to decompress `final_model_vgg16_transfer_zip.001` - `final_model_vgg16_transfer_zip.008` into `final_model_vgg16_transfer.h5`.
 
