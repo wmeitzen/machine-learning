@@ -3,6 +3,8 @@ Use 7zip to decompress `final_model_vgg16_transfer_zip.001` - `final_model_vgg16
 
 Run python script dogs_vs_cats.py
 
+My favorites are the dogs wearing ears and the stuffed animal.
+
 Output:
 ```
 model_type: vgg16_transfer
