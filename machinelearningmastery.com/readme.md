@@ -4,10 +4,15 @@ Result of stepping through the tutorial from https://machinelearningmastery.com/
 I hope I included everything you need to see the end result, along with a few real-world test images and a misclassified image (e.g., `wolf.png`).
 
 1. Edit python script dogs_vs_cats.py
-2. Change `create_final_model_vgg16_transfer_h5_file = False` to `create_final_model_vgg16_transfer_h5_file = True`
-3. Run python script -- will take 15-20 minutes on good hardware
-4. Output should be similar to below
-5. Change `create_final_model_vgg16_transfer_h5_file = True` to `create_final_model_vgg16_transfer_h5_file = False`
+1. Change `create_final_model_vgg16_transfer_h5_file = False` to `create_final_model_vgg16_transfer_h5_file = True`
+1. Run python script to create `final_model_vgg16_transfer.h5` -- will take 15-20 minutes on good hardware
+1. Output should be similar to below
+1. Change `create_final_model_vgg16_transfer_h5_file = True` to `create_final_model_vgg16_transfer_h5_file = False`
+1. Run python script again -- will finish much faster
+
+Experiment a little:
+1. Retrieve pictures of dogs or cats from the web, or take pictures of your own (I've only tested with jpg and png -- other formats may work)
+1. Add a `run_example()` function for your pictures
 
 My favorites are the dogs wearing ears and the stuffed animal.
 
