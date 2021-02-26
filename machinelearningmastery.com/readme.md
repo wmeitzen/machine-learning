@@ -1,9 +1,7 @@
 
+Use 7zip to decompress `final_model_vgg16_transfer_zip.001` - `final_model_vgg16_transfer_zip.008` into `final_model_vgg16_transfer.h5`.
+
 Run python script dogs_vs_cats.py
-
-On good hardware, it should take 10-15 minutes to generate the model file final_model_vgg16_transfer.h5.
-
-Once the model file is created, you don't have to re-create it. So, comment out the line run_test_harness(model_type='vgg16_transfer')
 
 Output:
 ```
