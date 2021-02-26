@@ -6,7 +6,7 @@ On good hardware, it should take 10-15 minutes to generate the model file final_
 Once the model file is created, you don't have to re-create it. So, comment out the line run_test_harness(model_type='vgg16_transfer')
 
 Output:
-
+```
 Model type: vgg16_transfer
 
 Found 18697 images belonging to 2 classes.
@@ -76,3 +76,4 @@ Predicted answer: a dog
 
 
 Process finished with exit code 0
+```
