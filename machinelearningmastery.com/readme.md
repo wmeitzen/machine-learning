@@ -1,7 +1,11 @@
 
-Use 7zip to decompress `final_model_vgg16_transfer_zip.001` - `final_model_vgg16_transfer_zip.008` into `final_model_vgg16_transfer.h5`.
+Result of stepping through the tutorial from https://machinelearningmastery.com/how-to-develop-a-convolutional-neural-network-to-classify-photos-of-dogs-and-cats/
 
-Run python script dogs_vs_cats.py
+I hope I included everything you need to see the end result, along with a few real-world test images.
+
+1. Use 7zip to decompress `final_model_vgg16_transfer_zip.001` - `final_model_vgg16_transfer_zip.008` into `final_model_vgg16_transfer.h5`.
+
+1. Run python script dogs_vs_cats.py
 
 My favorites are the dogs wearing ears and the stuffed animal.
 
