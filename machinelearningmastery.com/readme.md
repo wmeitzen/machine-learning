@@ -12,7 +12,7 @@ I hope I included everything you need to see the end result, along with a few re
 
 Experiment a little:
 1. Retrieve pictures of dogs or cats from the web, or take pictures of your own (I've only tested with jpg and png -- other formats may work)
-1. Add a `run_example()` function for your pictures
+3. In the python script, add a `run_example()` function for your pictures
 
 My favorites are the dogs wearing ears and the stuffed animal.
 
