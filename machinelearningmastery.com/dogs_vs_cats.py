@@ -295,12 +295,14 @@ def run_test_harness(model_type):
 	# learning curves
 	summarize_diagnostics(history, filenamepart=model_type)
 
-"""
+# - only need to run this code once, to generate the "final_model_vgg16_transfer.h5"
+# about 83 G
 now = datetime.datetime.now()
 print (now.strftime("%Y-%m-%d %H:%M"))
 # 10 epochs / 13 min / Model type: vgg16_transfer / > 97.874
 # 1 epoch / 4 sec / Model type: vgg16_transfer / > 97.573
 run_test_harness(model_type='vgg16_transfer')
+"""
 
 now = datetime.datetime.now()
 print (now.strftime("%Y-%m-%d %H:%M"))
