@@ -7,7 +7,7 @@ I hope I included everything you need to see the end result, along with a few re
 1. Change `create_final_model_vgg16_transfer_h5_file = False` to `create_final_model_vgg16_transfer_h5_file = True`
 1. Run python script to create `final_model_vgg16_transfer.h5` -- will take 15-20 minutes on good hardware
 1. Output should be similar to below
-1. Change `create_final_model_vgg16_transfer_h5_file = True` to `create_final_model_vgg16_transfer_h5_file = False`
+1. Change `create_final_model_vgg16_transfer_h5_file = True` back to `create_final_model_vgg16_transfer_h5_file = False`
 1. Run python script again -- will finish much faster
 
 Experiment a little:
