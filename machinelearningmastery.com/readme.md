@@ -1,7 +1,7 @@
 
 Result of stepping through the tutorial from https://machinelearningmastery.com/how-to-develop-a-convolutional-neural-network-to-classify-photos-of-dogs-and-cats/
 
-I hope I included everything you need to see the end result, along with a few real-world test images and a misclassified image (e.g., `wolf.png`).
+I hope I included everything you need to see the end result, along with a few real-world test images and one misclassified image: `wolf.png`.
 
 1. Edit python script dogs_vs_cats.py
 1. Change `create_final_model_vgg16_transfer_h5_file = False` to `create_final_model_vgg16_transfer_h5_file = True`
