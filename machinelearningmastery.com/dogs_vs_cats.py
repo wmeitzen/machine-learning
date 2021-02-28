@@ -374,7 +374,6 @@ def run_example(filename, model, should_be):
 
 # load model
 model_type='vgg16_transfer'
-print(f"model_type: {model_type}")
 model = load_model(f"final_model_{model_type}.h5")
 
 # entry point, run the examples
