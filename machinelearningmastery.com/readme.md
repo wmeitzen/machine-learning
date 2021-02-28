@@ -4,14 +4,14 @@ Result of stepping through the tutorial from https://machinelearningmastery.com/
 I included everything you need to see the end result, along with a few real-world test images and one misclassified image: `wolf.png`.
 
 1. Download python script `dogs_vs_cats.py`
-1. Download all .jpg and .png files
+1. Download all `.jpg` and `.png` files
 1. Download `final_model_vgg16_transfer.h5`
 1. Make sure downloaded files are in the same directory
 1. Run python script
 
 Experiment a little:
-1. Retrieve pictures of dogs or cats from the web, or take pictures of your own (I've only tested with jpg and png -- other formats may work)
-3. In the python script, add a `run_example()` function for your pictures
+1. Retrieve pictures of dogs or cats from the web, or take pictures of your own. I've only tested with jpg and png. I don't know if other formats work.
+1. In the python script, add a `run_example()` function for your pictures
 
 My favorites are the dogs wearing ears and the stuffed animal.
 
