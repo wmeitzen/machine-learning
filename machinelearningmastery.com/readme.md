@@ -9,11 +9,14 @@ I included everything you need to see the end result, along with a few real-worl
 1. Make sure downloaded files are in the same directory
 1. Run python script
 
+I was most impressed that it classified the dogs wearing ears and the stuffed animal correctly.
+
 Experiment a little:
 1. Retrieve pictures of dogs or cats from the web, or take pictures of your own. I've only tested with jpg and png. I don't know if other formats work.
-1. In the python script, add a `run_example()` function for your pictures
+1. Place your images in the same directory as the python script.
+1. In the python script, add a `run_example()` function for each of your new images.
 
-My favorites are the dogs wearing ears and the stuffed animal.
+(You'll see a lot of my code is commented out. I wanted to compare and contrast different models and hyperparameters more easily.  Such is the result of my experimentation.)
 
 Output:
 ```
@@ -78,3 +81,4 @@ Should be: stuffed animal dog
 Predicted answer: a dog
 
 ```
+

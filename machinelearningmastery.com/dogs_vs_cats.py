@@ -266,9 +266,9 @@ def run_test_harness(model_type):
 		# specify imagenet mean values for centering
 		datagen.mean = [123.68, 116.779, 103.939]
 		train_it = datagen.flow_from_directory('dataset_dogs_vs_cats/train/',
-											   class_mode='binary', batch_size=64, target_size=(224, 224))
+			class_mode='binary', batch_size=64, target_size=(224, 224))
 		test_it = datagen.flow_from_directory('dataset_dogs_vs_cats/test/',
-											  class_mode='binary', batch_size=64, target_size=(224, 224))
+			class_mode='binary', batch_size=64, target_size=(224, 224))
 	else:
 		datagen = ImageDataGenerator(rescale=1.0/255.0)
 		train_it = datagen.flow_from_directory('dataset_dogs_vs_cats/train/',
@@ -282,7 +282,7 @@ def run_test_harness(model_type):
 			validation_data=test_it, validation_steps=len(test_it), epochs=20, verbose=0)
 	elif (model_type == 'vgg16_transfer'):
 		history = model.fit_generator(train_it, steps_per_epoch=len(train_it),
-									  validation_data=test_it, validation_steps=len(test_it), epochs=1, verbose=0) # epochs=10
+			validation_data=test_it, validation_steps=len(test_it), epochs=1, verbose=0) # epochs=10
 	else:
 		history = model.fit_generator(train_it, steps_per_epoch=len(train_it),
 			validation_data=test_it, validation_steps=len(test_it), epochs=50, verbose=0)
