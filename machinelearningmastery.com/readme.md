@@ -79,6 +79,5 @@ model type filename: final_model_vgg16_transfer.h5
 exact result (close to 0.0=cat, close to 1.0=dog): 0.8402582406997681
 Should be: stuffed animal dog
 Predicted answer: a dog
-
 ```
 
