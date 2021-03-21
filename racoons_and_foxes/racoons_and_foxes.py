@@ -30,6 +30,8 @@ from keras.preprocessing.image import ImageDataGenerator
 import shutil
 from timeit import default_timer as timer
 
+start = timer()
+
 # load dogs vs cats dataset, reshape and save to a new file
 #from os import listdir
 #from numpy import asarray
@@ -240,9 +242,9 @@ def run_validation_tests(model):
 			if predicted_answer != ground_truth and ground_truth == 1.0:  # it mismatched and was positive
 				ground_truth_mismatched_positive_prediction = ground_truth_mismatched_positive_prediction + 1
 				print(f"{image_filename} predicted negative, should be positive")
-	print(f"positive match::total = {ground_truth_matched_positive_prediction}::{positive_ground_truth_file_count} = {str(round(ground_truth_matched_positive_prediction / positive_ground_truth_file_count * 100, 2))} %")
-	print(f"negative match::total = {ground_truth_matched_negative_prediction}::{negative_ground_truth_file_count} = {str(round(ground_truth_matched_negative_prediction / negative_ground_truth_file_count * 100, 2))} %")
-	print(f"sum match::total = {ground_truth_matches_prediction}::{file_count} = {str(round(ground_truth_matches_prediction / file_count * 100, 2))} %")
+	print(f"positive match::positive total = {ground_truth_matched_positive_prediction}::{positive_ground_truth_file_count} = {str(round(ground_truth_matched_positive_prediction / positive_ground_truth_file_count * 100, 2))} %")
+	print(f"negative match::negative total = {ground_truth_matched_negative_prediction}::{negative_ground_truth_file_count} = {str(round(ground_truth_matched_negative_prediction / negative_ground_truth_file_count * 100, 2))} %")
+	print(f"sum match::sum total = {ground_truth_matches_prediction}::{file_count} = {str(round(ground_truth_matches_prediction / file_count * 100, 2))} %")
 
 # load model
 unprocessed_dataset_home = 'unprocessed_images/'
@@ -258,16 +260,14 @@ processed_dataset_home = 'processed_images/'
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1" # comment out to use GPU, if you have one
 
-start = timer()
-
 initialize = True
 if initialize == True:
 	now = datetime.now()
 	print (now.strftime("%Y-%m-%d %H:%M"))
 	recreate_train_test_validate_images_subdirs()
 	# - epochs 1: freakishly close to 100% all the way
-	run_test_harness(epochs=1, fit_generator_verbose = 1, evaluate_generator_verbose = 1)
-	run_finalize_harness(epochs=1, fit_generator_verbose = 1)
+	run_test_harness(epochs=4, fit_generator_verbose = 1, evaluate_generator_verbose = 1)
+	run_finalize_harness(epochs=4, fit_generator_verbose = 1)
 
 model = load_model(f"final_model.h5")
 
