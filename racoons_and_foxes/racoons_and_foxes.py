@@ -29,6 +29,8 @@ from keras.models import Model
 from keras.preprocessing.image import ImageDataGenerator
 import shutil
 from timeit import default_timer as timer
+from PIL import Image, ImageStat
+import glob
 
 start = timer()
 
@@ -39,7 +41,6 @@ start = timer()
 #from keras.preprocessing.image import load_img
 #from keras.preprocessing.image import img_to_array
 #from numpy import load
-
 
 # plot diagnostic learning curves
 def summarize_diagnostics(history):
@@ -146,9 +147,87 @@ def run_example(filename, model, should_be):
 	print("")
 	#print(result[0])
 
+
+#Function calculates the difference between the CURRENT image file RMS value and RMS values calculated at start
+def average_diff(v1, v2, show_rms_info = False):
+    duplicate = False
+    diff = 0.01 # original
+    #diff = 0.1
+    if len(v1) >= 3 and len(v2) >= 3: # jpg
+        calculated_rms_difference = [v1[0]-v2[0], v1[1]-v2[1], v1[2]-v2[2]]
+        if calculated_rms_difference[0] < diff and calculated_rms_difference[0] > -diff and \
+                calculated_rms_difference[1] < diff and calculated_rms_difference[1] > -diff and \
+                calculated_rms_difference[2] < diff and calculated_rms_difference[2] > -diff:
+            duplicate = True
+    elif len(v1) >= 1 and len(v2) >= 1: # png
+        calculated_rms_difference = [v1[0] - v2[0]]
+        if calculated_rms_difference[0] < diff and calculated_rms_difference[0] > -diff:
+            duplicate = True
+    if show_rms_info == True:
+        print(f'rms info: calculated_rms_difference = {calculated_rms_difference}')
+    return duplicate
+
+def delete_dupes_using_rms(images, rms_pixels):
+    old_percentage = -100
+    for image_file_count in range(len(images) - 1):
+        new_percentage = round(image_file_count / (len(images) - 1) * 100)
+        new_string = f'{image_file_count} of {len(images) - 1}, {new_percentage} % complete'
+        if new_percentage >= old_percentage + 10:
+            print(new_string)
+            old_percentage = new_percentage
+        image_file = images[image_file_count]
+        if not(os.path.exists(image_file)):
+            continue
+        rms_file_1_binary = Image.open(fp=image_file)
+        rms_file_1_properties = ImageStat.Stat(rms_file_1_binary).mean
+        for rms_file_count in range(image_file_count + 1, len(images)):
+            rms_file_2_properties = rms_pixels[rms_file_count]
+            rms_file_2 = rms_file_2_properties[len(rms_file_2_properties) - 1]
+            is_duplicate = average_diff(rms_file_1_properties, rms_file_2_properties)
+            if is_duplicate:
+                if os.path.exists(image_file) and os.path.exists(rms_file_2):
+                    print(f"Found dupe: {image_file} and {rms_file_2}")
+                    print(f"  Deleting dupe: {rms_file_2}")
+                    os.remove(rms_file_2)
+
+def delete_duplicate_image_hashes(root_directory, subdirectories=None):
+	print(f"Retrieving files from {root_directory}")
+	if subdirectories is not None:
+		print(f"then under {subdirectories}")
+	image_files = []
+	rms_pixels = []
+	if subdirectories is None:
+		for filename in glob.iglob(pathname=os.path.join(root_directory, '**'), recursive=True):
+			if os.path.isfile(filename):
+				image_files.append(filename)
+	else:
+		for subdir in subdirectories:
+			for filename in glob.iglob(pathname=os.path.join(root_directory, subdir, '**'), recursive=True):
+				if os.path.isfile(filename):
+					image_files.append(filename)
+	# Create a list with all the Image RMS values. These are used to compare to the CURRENT image file in list
+	print(f"Retrieving stats for {len(image_files)} images")
+	for x in image_files:
+		# print(x)
+		compare_image = Image.open(x)  # Image.open(os.path.join(image_folder, x))
+		rms_pixel = ImageStat.Stat(compare_image).mean
+		rms_pixel.append(x)
+		rms_pixels.append(rms_pixel)
+	# print(rms_pixel)
+	# Driver code, runs the script
+	print(f"Removing duplicates")
+	delete_dupes_using_rms(images=image_files, rms_pixels=rms_pixels)
+
+def delete_duplicate_images():
+	shutil.rmtree(path=duplicate_image_processing_dataset_home, ignore_errors=True)
+	print(f"Copying files from unprocessed directory ({unprocessed_dataset_home}) to processing directory ({duplicate_image_processing_dataset_home})")
+	shutil.copytree(src=unprocessed_dataset_home, dst=duplicate_image_processing_dataset_home)
+	delete_duplicate_image_hashes(root_directory=duplicate_image_processing_dataset_home)
+
 def recreate_train_test_validate_images_subdirs():
 	# create directories
-	print(f"Copying and distributing files from unprocessed directory ({unprocessed_dataset_home}) to processed directory ({processed_dataset_home})")
+	src = duplicate_image_processing_dataset_home
+	print(f"Copying and distributing files from directory ({src}) to processed directory ({processed_dataset_home})")
 	subdirs = ['train/', 'test/', 'validate/', 'finalize/']
 	for subdir in subdirs:
 		newdir = processed_dataset_home + subdir
@@ -168,12 +247,12 @@ def recreate_train_test_validate_images_subdirs():
 	random.seed(datetime.now())
 	# define ratio of pictures to use for training, testing, and validating
 	# - add them up to 1.0
-	validation_ratio = 0.05 # must be smaller than, and not equal to, test_ratio (makes my code simpler)
+	validation_ratio = 0.02 # must be smaller than, and not equal to, test_ratio (makes my code simpler)
 	test_ratio = 0.15 # must be a lot lower than train_ratio
-	train_ratio = 0.80
+	train_ratio = 0.83
 	# copy training dataset images into subdirectories
-	for directory_or_filename in os.listdir(path=unprocessed_dataset_home):
-		check_directory_or_filename = unprocessed_dataset_home + directory_or_filename + '/'
+	for directory_or_filename in os.listdir(path=src):
+		check_directory_or_filename = src + directory_or_filename + '/'
 		directory_alone = directory_or_filename
 		if os.path.isdir(check_directory_or_filename):
 			directory = check_directory_or_filename
@@ -246,8 +325,8 @@ def run_validation_tests(model):
 	print(f"negative match::negative total = {ground_truth_matched_negative_prediction}::{negative_ground_truth_file_count} = {str(round(ground_truth_matched_negative_prediction / negative_ground_truth_file_count * 100, 2))} %")
 	print(f"sum match::sum total = {ground_truth_matches_prediction}::{file_count} = {str(round(ground_truth_matches_prediction / file_count * 100, 2))} %")
 
-# load model
 unprocessed_dataset_home = 'unprocessed_images/'
+duplicate_image_processing_dataset_home = 'processing_duplicate_images/'
 processed_dataset_home = 'processed_images/'
 
 # - only need to set "initialize = True" once (unless you want to use more / less / different images)
@@ -264,22 +343,31 @@ initialize = True
 if initialize == True:
 	now = datetime.now()
 	print (now.strftime("%Y-%m-%d %H:%M"))
+	delete_duplicate_images()
 	recreate_train_test_validate_images_subdirs()
-	# - epochs 1: freakishly close to 100% all the way
-	run_test_harness(epochs=4, fit_generator_verbose = 1, evaluate_generator_verbose = 1)
-	run_finalize_harness(epochs=4, fit_generator_verbose = 1)
+	# - epochs 4: seems best
+	run_test_harness(epochs=3, fit_generator_verbose = 1, evaluate_generator_verbose = 1)
+	run_finalize_harness(epochs=3, fit_generator_verbose = 1)
 
+# load model
 model = load_model(f"final_model.h5")
 
 # entry point, run the examples
 run_validation_tests(model=model)
-run_example(filename='calendar_fox_1.jpg', model=model, should_be='a fox')
-run_example(filename='calendar_fox_2.jpg', model=model, should_be='a fox')
-run_example(filename='calendar_fox_3.jpg', model=model, should_be='a fox, b/w')
+run_example(filename='calendar_fox_1.jpg', model=model, should_be='true, a fox')
+run_example(filename='calendar_fox_2.jpg', model=model, should_be='true, a fox')
+run_example(filename='calendar_fox_3.jpg', model=model, should_be='true, a fox, b/w')
 
 run_example(filename='cow_1.jpg', model=model, should_be='false, a cow')
 run_example(filename='pig_1.jpg', model=model, should_be='false, a pig')
 run_example(filename='sheep_1.jpg', model=model, should_be='false, a sheep')
+
+run_example(filename='fox_example_wilbur_1.jpg', model=model, should_be='true, a fox')
+
+run_example(filename='wilbur_racoon_1.jpg', model=model, should_be='true, a racoon')
+run_example(filename='wilbur_owl_chicken_1.jpg', model=model, should_be='false, chicken and owl')
+run_example(filename='wilbur_armadillo_1.jpg', model=model, should_be='false, armadillo')
+run_example(filename='wilbur_racoon_2.jpg', model=model, should_be='true, a racoon')
 
 duration = timer() - start
 print(f"{str(round(duration, 1))} sec")
