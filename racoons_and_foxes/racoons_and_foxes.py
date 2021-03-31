@@ -29,7 +29,7 @@ from keras.models import Model
 from keras.preprocessing.image import ImageDataGenerator
 import shutil
 from timeit import default_timer as timer
-from PIL import Image, ImageStat
+from PIL import Image, ImageStat, ImageFilter
 import glob
 
 start = timer()
@@ -150,45 +150,45 @@ def run_example(filename, model, should_be):
 
 #Function calculates the difference between the CURRENT image file RMS value and RMS values calculated at start
 def average_diff(v1, v2, show_rms_info = False):
-    duplicate = False
-    diff = 0.01 # original
-    #diff = 0.1
-    if len(v1) >= 3 and len(v2) >= 3: # jpg
-        calculated_rms_difference = [v1[0]-v2[0], v1[1]-v2[1], v1[2]-v2[2]]
-        if calculated_rms_difference[0] < diff and calculated_rms_difference[0] > -diff and \
-                calculated_rms_difference[1] < diff and calculated_rms_difference[1] > -diff and \
-                calculated_rms_difference[2] < diff and calculated_rms_difference[2] > -diff:
-            duplicate = True
-    elif len(v1) >= 1 and len(v2) >= 1: # png
-        calculated_rms_difference = [v1[0] - v2[0]]
-        if calculated_rms_difference[0] < diff and calculated_rms_difference[0] > -diff:
-            duplicate = True
-    if show_rms_info == True:
-        print(f'rms info: calculated_rms_difference = {calculated_rms_difference}')
-    return duplicate
+	duplicate = False
+	diff = 0.01 # original
+	#diff = 0.1
+	if len(v1) >= 3 and len(v2) >= 3: # jpg
+		calculated_rms_difference = [v1[0]-v2[0], v1[1]-v2[1], v1[2]-v2[2]]
+		if calculated_rms_difference[0] < diff and calculated_rms_difference[0] > -diff and \
+				calculated_rms_difference[1] < diff and calculated_rms_difference[1] > -diff and \
+				calculated_rms_difference[2] < diff and calculated_rms_difference[2] > -diff:
+			duplicate = True
+	elif len(v1) >= 1 and len(v2) >= 1: # png
+		calculated_rms_difference = [v1[0] - v2[0]]
+		if calculated_rms_difference[0] < diff and calculated_rms_difference[0] > -diff:
+			duplicate = True
+	if show_rms_info == True:
+		print(f'rms info: calculated_rms_difference = {calculated_rms_difference}')
+	return duplicate
 
 def delete_dupes_using_rms(images, rms_pixels):
-    old_percentage = -100
-    for image_file_count in range(len(images) - 1):
-        new_percentage = round(image_file_count / (len(images) - 1) * 100)
-        new_string = f'{image_file_count} of {len(images) - 1}, {new_percentage} % complete'
-        if new_percentage >= old_percentage + 10:
-            print(new_string)
-            old_percentage = new_percentage
-        image_file = images[image_file_count]
-        if not(os.path.exists(image_file)):
-            continue
-        rms_file_1_binary = Image.open(fp=image_file)
-        rms_file_1_properties = ImageStat.Stat(rms_file_1_binary).mean
-        for rms_file_count in range(image_file_count + 1, len(images)):
-            rms_file_2_properties = rms_pixels[rms_file_count]
-            rms_file_2 = rms_file_2_properties[len(rms_file_2_properties) - 1]
-            is_duplicate = average_diff(rms_file_1_properties, rms_file_2_properties)
-            if is_duplicate:
-                if os.path.exists(image_file) and os.path.exists(rms_file_2):
-                    print(f"Found dupe: {image_file} and {rms_file_2}")
-                    print(f"  Deleting dupe: {rms_file_2}")
-                    os.remove(rms_file_2)
+	old_percentage = -100
+	for image_file_count in range(len(images) - 1):
+		new_percentage = round(image_file_count / (len(images) - 1) * 100)
+		new_string = f'{image_file_count} of {len(images) - 1}, {new_percentage} % complete'
+		if new_percentage >= old_percentage + 10:
+			print(new_string)
+			old_percentage = new_percentage
+		image_file = images[image_file_count]
+		if not(os.path.exists(image_file)):
+			continue
+		rms_file_1_binary = Image.open(fp=image_file)
+		rms_file_1_properties = ImageStat.Stat(rms_file_1_binary).mean
+		for rms_file_count in range(image_file_count + 1, len(images)):
+			rms_file_2_properties = rms_pixels[rms_file_count]
+			rms_file_2 = rms_file_2_properties[len(rms_file_2_properties) - 1]
+			is_duplicate = average_diff(rms_file_1_properties, rms_file_2_properties)
+			if is_duplicate:
+				if os.path.exists(image_file) and os.path.exists(rms_file_2):
+					print(f"Found dupe: {image_file} and {rms_file_2}")
+					print(f"  Deleting dupe: {rms_file_2}")
+					os.remove(rms_file_2)
 
 def delete_duplicate_image_hashes(root_directory, subdirectories=None):
 	print(f"Retrieving files from {root_directory}")
@@ -219,14 +219,34 @@ def delete_duplicate_image_hashes(root_directory, subdirectories=None):
 	delete_dupes_using_rms(images=image_files, rms_pixels=rms_pixels)
 
 def delete_duplicate_images():
-	shutil.rmtree(path=duplicate_image_processing_dataset_home, ignore_errors=True)
-	print(f"Copying files from unprocessed directory ({unprocessed_dataset_home}) to processing directory ({duplicate_image_processing_dataset_home})")
-	shutil.copytree(src=unprocessed_dataset_home, dst=duplicate_image_processing_dataset_home)
-	delete_duplicate_image_hashes(root_directory=duplicate_image_processing_dataset_home)
+	shutil.rmtree(path=processing_deduplicated_images_dataset_home, ignore_errors=True)
+	print(f"Copying files from unprocessed directory ({unprocessed_dataset_home}) to processing directory ({processing_deduplicated_images_dataset_home})")
+	shutil.copytree(src=unprocessed_dataset_home, dst=processing_deduplicated_images_dataset_home)
+	delete_duplicate_image_hashes(root_directory=processing_deduplicated_images_dataset_home)
+
+# - assumes the "root" directory has a set of directories 1 level deep, with only files in
+# each of those directories
+def write_bw_blurred_images():
+	src = processing_deduplicated_images_dataset_home
+	print(f"Generating additional B&W blurred images from originals in {src}")
+	# delete bw_blurred directories, if any
+	for negative_or_positive in os.listdir(path=src):
+		if negative_or_positive.endswith('_bw_blurred'):
+			shutil.rmtree(path=os.path.join(src, negative_or_positive))
+	for negative_or_positive in os.listdir(path=src):
+		makedirs(name=os.path.join(src, negative_or_positive + '_bw_blurred'), exist_ok=False)
+		for file in os.listdir(path=os.path.join(src, negative_or_positive)):
+			if file.endswith('.png'):
+				img = Image.open(fp=os.path.join(src, negative_or_positive, file)).convert('LA').filter(ImageFilter.GaussianBlur(3))
+				file = file + '.bw_g.png'
+			else:
+				img = Image.open(fp=os.path.join(src, negative_or_positive, file)).convert('L').filter(ImageFilter.GaussianBlur(3))
+				file = file + '.bw_g.jpg'
+			img.save(os.path.join(src, negative_or_positive + '_bw_blurred', file))
 
 def recreate_train_test_validate_images_subdirs():
 	# create directories
-	src = duplicate_image_processing_dataset_home
+	src = processing_deduplicated_images_dataset_home
 	print(f"Copying and distributing files from directory ({src}) to processed directory ({processed_dataset_home})")
 	subdirs = ['train/', 'test/', 'validate/', 'finalize/']
 	for subdir in subdirs:
@@ -326,7 +346,7 @@ def run_validation_tests(model):
 	print(f"sum match::sum total = {ground_truth_matches_prediction}::{file_count} = {str(round(ground_truth_matches_prediction / file_count * 100, 2))} %")
 
 unprocessed_dataset_home = 'unprocessed_images/'
-duplicate_image_processing_dataset_home = 'processing_duplicate_images/'
+processing_deduplicated_images_dataset_home = 'processing_deduplicated_images/'
 processed_dataset_home = 'processed_images/'
 
 # - only need to set "initialize = True" once (unless you want to use more / less / different images)
@@ -339,11 +359,12 @@ processed_dataset_home = 'processed_images/'
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1" # comment out to use GPU, if you have one
 
-initialize = True
+initialize = False
 if initialize == True:
 	now = datetime.now()
 	print (now.strftime("%Y-%m-%d %H:%M"))
-	delete_duplicate_images()
+	delete_duplicate_images() # uncomment later
+	write_bw_blurred_images()
 	recreate_train_test_validate_images_subdirs()
 	# - epochs 4: seems best
 	run_test_harness(epochs=3, fit_generator_verbose = 1, evaluate_generator_verbose = 1)
