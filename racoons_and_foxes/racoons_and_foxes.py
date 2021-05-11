@@ -76,12 +76,38 @@ def define_model_vgg16_transfer():
 	model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 	return model
 
+#def define_model_vgg16_transfer(in_shape=(128, 128, 3), out_shape=17):
+def define_model_vgg16_transfer_out_shape(in_shape=(128, 128, 3), out_shape=17):
+	# load model
+	model = VGG16(include_top=False, input_shape=in_shape)
+	#model = VGG16(include_top=False, input_shape=(224, 224, 3))
+	# mark loaded layers as not trainable
+	for layer in model.layers:
+		layer.trainable = False
+	# allow last vgg block to be trainable
+	model.get_layer('block5_conv1').trainable = True
+	model.get_layer('block5_conv2').trainable = True
+	model.get_layer('block5_conv3').trainable = True
+	model.get_layer('block5_pool').trainable = True
+	# add new classifier layers
+	flat1 = Flatten()(model.layers[-1].output)
+	class1 = Dense(128, activation='relu', kernel_initializer='he_uniform')(flat1)
+	output = Dense(out_shape, activation='sigmoid')(class1)
+	# define new model
+	model = Model(inputs=model.inputs, outputs=output)
+	# compile model
+	opt = SGD(lr=0.01, momentum=0.9)
+	# model.compile(optimizer=opt, loss='binary_crossentropy', metrics=[fbeta])
+	model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+	return model
+
 # run the test harness for evaluating a model
 def run_test_harness(epochs, fit_generator_verbose, evaluate_generator_verbose):
 	# define model
 	#fit_generator_verbose = 1
 	#evaluate_generator_verbose = 1
 	model = define_model_vgg16_transfer()
+	#model = define_model_vgg16_transfer_out_shape()
 
 	datagen = ImageDataGenerator(featurewise_center=True)
 	# specify imagenet mean values for centering
@@ -345,6 +371,10 @@ def run_validation_tests(model):
 	print(f"negative match::negative total = {ground_truth_matched_negative_prediction}::{negative_ground_truth_file_count} = {str(round(ground_truth_matched_negative_prediction / negative_ground_truth_file_count * 100, 2))} %")
 	print(f"sum match::sum total = {ground_truth_matches_prediction}::{file_count} = {str(round(ground_truth_matches_prediction / file_count * 100, 2))} %")
 
+#config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
+#config.gpu_options.allow_growth = True
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+
 unprocessed_dataset_home = 'unprocessed_images/'
 processing_deduplicated_images_dataset_home = 'processing_deduplicated_images/'
 processed_dataset_home = 'processed_images/'
@@ -357,7 +387,7 @@ processed_dataset_home = 'processed_images/'
 # with a good PC and GPU, this process takes 1 min 25 sec
 # with a good PC and no GPU, this process takes 18 min 51 sec
 
-#os.environ["CUDA_VISIBLE_DEVICES"] = "-1" # comment out to use GPU, if you have one
+#os.environ["CUDA_VISIBLE_DEVICES"] = "-1" # uncomment to avoid using a GPU
 
 initialize = False
 if initialize == True:
