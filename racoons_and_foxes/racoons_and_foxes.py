@@ -31,6 +31,7 @@ import shutil
 from timeit import default_timer as timer
 from PIL import Image, ImageStat, ImageFilter
 import glob
+#from tensorflow.keras.applications.resnet50 import preprocess_input, decode_predictions
 
 start = timer()
 
@@ -76,31 +77,6 @@ def define_model_vgg16_transfer():
 	model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 	return model
 
-#def define_model_vgg16_transfer(in_shape=(128, 128, 3), out_shape=17):
-def define_model_vgg16_transfer_out_shape(in_shape=(128, 128, 3), out_shape=17):
-	# load model
-	model = VGG16(include_top=False, input_shape=in_shape)
-	#model = VGG16(include_top=False, input_shape=(224, 224, 3))
-	# mark loaded layers as not trainable
-	for layer in model.layers:
-		layer.trainable = False
-	# allow last vgg block to be trainable
-	model.get_layer('block5_conv1').trainable = True
-	model.get_layer('block5_conv2').trainable = True
-	model.get_layer('block5_conv3').trainable = True
-	model.get_layer('block5_pool').trainable = True
-	# add new classifier layers
-	flat1 = Flatten()(model.layers[-1].output)
-	class1 = Dense(128, activation='relu', kernel_initializer='he_uniform')(flat1)
-	output = Dense(out_shape, activation='sigmoid')(class1)
-	# define new model
-	model = Model(inputs=model.inputs, outputs=output)
-	# compile model
-	opt = SGD(lr=0.01, momentum=0.9)
-	# model.compile(optimizer=opt, loss='binary_crossentropy', metrics=[fbeta])
-	model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
-	return model
-
 # run the test harness for evaluating a model
 def run_test_harness(epochs, fit_generator_verbose, evaluate_generator_verbose):
 	# define model
@@ -112,10 +88,12 @@ def run_test_harness(epochs, fit_generator_verbose, evaluate_generator_verbose):
 	datagen = ImageDataGenerator(featurewise_center=True)
 	# specify imagenet mean values for centering
 	datagen.mean = [123.68, 116.779, 103.939]
+	batch_size = 64 # - original
+	#batch_size = 128
 	train_it = datagen.flow_from_directory(processed_dataset_home + 'train/',
-			class_mode='binary', batch_size=64, target_size=(224, 224))
+			class_mode='binary', batch_size=batch_size, target_size=(224, 224))
 	test_it = datagen.flow_from_directory(processed_dataset_home + 'test/',
-			class_mode='binary', batch_size=64, target_size=(224, 224))
+			class_mode='binary', batch_size=batch_size, target_size=(224, 224))
 
 	# original epochs = 1
 	history = model.fit_generator(train_it, steps_per_epoch=len(train_it),
@@ -137,7 +115,8 @@ def run_finalize_harness(epochs, fit_generator_verbose):
 		class_mode='binary', batch_size=64, target_size=(224, 224))
 	# epochs = 10
 	model.fit_generator(finalize_it, steps_per_epoch=len(finalize_it), epochs=epochs, verbose=fit_generator_verbose)
-	model.save(f"final_model.h5")
+	model.save(f"final_model.h5") # 82 mb
+	#model.save(f"final_model.tfsm") # ?? mb
 
 # load and prepare the image
 def load_image(filename):
@@ -254,6 +233,7 @@ def delete_duplicate_images():
 # each of those directories
 def write_bw_blurred_images():
 	src = processing_deduplicated_images_dataset_home
+	gaussian_blur_radius = 5 # original: 3
 	print(f"Generating additional B&W blurred images from originals in {src}")
 	# delete bw_blurred directories, if any
 	for negative_or_positive in os.listdir(path=src):
@@ -263,10 +243,10 @@ def write_bw_blurred_images():
 		makedirs(name=os.path.join(src, negative_or_positive + '_bw_blurred'), exist_ok=False)
 		for file in os.listdir(path=os.path.join(src, negative_or_positive)):
 			if file.endswith('.png'):
-				img = Image.open(fp=os.path.join(src, negative_or_positive, file)).convert('LA').filter(ImageFilter.GaussianBlur(3))
+				img = Image.open(fp=os.path.join(src, negative_or_positive, file)).convert('LA').filter(ImageFilter.GaussianBlur(radius=gaussian_blur_radius))
 				file = file + '.bw_g.png'
 			else:
-				img = Image.open(fp=os.path.join(src, negative_or_positive, file)).convert('L').filter(ImageFilter.GaussianBlur(3))
+				img = Image.open(fp=os.path.join(src, negative_or_positive, file)).convert('L').filter(ImageFilter.GaussianBlur(radius=gaussian_blur_radius))
 				file = file + '.bw_g.jpg'
 			img.save(os.path.join(src, negative_or_positive + '_bw_blurred', file))
 
@@ -371,9 +351,7 @@ def run_validation_tests(model):
 	print(f"negative match::negative total = {ground_truth_matched_negative_prediction}::{negative_ground_truth_file_count} = {str(round(ground_truth_matched_negative_prediction / negative_ground_truth_file_count * 100, 2))} %")
 	print(f"sum match::sum total = {ground_truth_matches_prediction}::{file_count} = {str(round(ground_truth_matches_prediction / file_count * 100, 2))} %")
 
-#config = tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
-#config.gpu_options.allow_growth = True
-os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true' # recent update to pycharm shows errors until this code is added
 
 unprocessed_dataset_home = 'unprocessed_images/'
 processing_deduplicated_images_dataset_home = 'processing_deduplicated_images/'
@@ -384,12 +362,12 @@ processed_dataset_home = 'processed_images/'
 # separate files into directories
 # generate the "final_model.h5"
 # Once the .h5 file is created, use the run_example function to see if an image is a fox/racoon or not
-# with a good PC and GPU, this process takes 1 min 25 sec
-# with a good PC and no GPU, this process takes 18 min 51 sec
+# with a good PC and GPU, this process takes 10 min
+# with a good PC and no GPU, this process takes hours
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1" # uncomment to avoid using a GPU
 
-initialize = False
+initialize = True
 if initialize == True:
 	now = datetime.now()
 	print (now.strftime("%Y-%m-%d %H:%M"))
