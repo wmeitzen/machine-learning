@@ -1,22 +1,19 @@
 
-import cv2
+#import cv2
 import time
 import numpy as np
 from datetime import datetime
+from tensorflow.keras.applications.resnet50 import preprocess_input, decode_predictions
 from keras.preprocessing.image import load_img
 from keras.preprocessing.image import img_to_array
 from keras.models import load_model
+from tensorflow.keras.preprocessing import image
 from PIL import Image
-#from matplotlib import pyplot as plt
 import pygame
 import pygame.camera
 from pygame.locals import *
-#import pygame
-#import pygame.camera
-#from pygame.locals import *
 
-# load and prepare the image
-def transform_frame_to_binary_image(frame):
+def transform_frame_to_binary_image_OLD(frame):
     # load the image
     print("Converting frame to binary image")
     #img = Image.fromarray(frame, 'RGB') # fails
@@ -31,6 +28,8 @@ def transform_frame_to_binary_image(frame):
     img = img.resize((224, 224))
     # convert to array
     img = img_to_array(img)
+    img = np.expand_dims(img, axis = 0)
+    img = preprocess_input(img)
     # reshape into a single sample with 3 channels
     img = img.reshape(1, 224, 224, 3)
     # center pixel data
@@ -41,14 +40,26 @@ def transform_frame_to_binary_image(frame):
     print(f"Converting took {round(elapsed, 1)} sec")
     return img
 
+def transform_frame_to_binary_image(frame):
+    start_time = time.time()
+    pil_string_image = pygame.image.tostring(frame, 'RGB', False)
+    img = Image.frombytes('RGB', (224, 224), pil_string_image)
+    #img = Image.frombytes('RGB', (640, 480), pil_string_image)
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis = 0)
+    x = preprocess_input(x)
+    return x
+
 # load an image and predict the class
-def run_frame_example(model, frame):
+#def run_frame_example(model, frame):
+def run_frame_example(frame):
     # load the image
     img = transform_frame_to_binary_image(frame)
     # load model
     print("Predicting")
     start_time = time.time()
     result_array = model.predict(img)
+    #result_array = model(img, training=False) # no speedup
     finish_time = time.time()
     elapsed = finish_time - start_time
     print(f"Predicting took {round(elapsed, 1)} sec")
@@ -83,6 +94,7 @@ snapshot = pygame.surface.Surface(size, 0, display)
 
 # load model
 model = load_model(f"final_model.h5")
+#model = load_model(f"final_model.tfsm")
 
 #cap = Capture()
 while True:
@@ -99,6 +111,7 @@ while True:
     # blit it to the display surface.  simple!
     display.blit(snapshot, (0,0))
     pygame.display.flip()
-    run_frame_example(model = model, frame = snapshot)
+    #run_frame_example(model = model, frame = snapshot)
+    run_frame_example(frame = snapshot)
 
 
