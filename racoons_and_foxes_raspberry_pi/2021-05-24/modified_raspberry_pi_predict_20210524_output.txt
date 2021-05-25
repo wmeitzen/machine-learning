@@ -1,0 +1,66 @@
+Python 3.7.3 (/usr/bin/python3)
+>>> %Run modified_raspberry_pi_predict_20210524.py
+pygame 1.9.4.post1
+Hello from the pygame community. https://www.pygame.org/contribute.html
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+Predicting from image files.
+Predicting
+Predicting took 8.4 sec
+result (close to 0.0 = false, close to 1.0 = true): 0.23
+Should be: True
+Predicted answer: false (not racoon or fox)
+
+Predicting
+Predicting took 8.2 sec
+result (close to 0.0 = false, close to 1.0 = true): 0.05
+Should be: False
+Predicted answer: false (not racoon or fox)
+
+Predicting
+Predicting took 8.4 sec
+result (close to 0.0 = false, close to 1.0 = true): 0.26
+Should be: True
+Predicted answer: false (not racoon or fox)
+
+Predicting
+Predicting took 8.3 sec
+result (close to 0.0 = false, close to 1.0 = true): 0.17
+Should be: False
+Predicted answer: false (not racoon or fox)
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Python 3.7.3 (/usr/bin/python3)
+>>> %Run modified_raspberry_pi_predict_20210524.py
+pygame 1.9.4.post1
+Hello from the pygame community. https://www.pygame.org/contribute.html
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+Predicting from image files.
+Predicting
+Predicting took 0.3 sec
+result (close to 0.0 = false, close to 1.0 = true): 0.22
+Should be: True
+Predicted answer: false (not racoon or fox)
+
+Predicting
+Predicting took 0.0 sec
+result (close to 0.0 = false, close to 1.0 = true): 0.39
+Should be: False
+Predicted answer: false (not racoon or fox)
+
+Predicting
+Predicting took 0.0 sec
+result (close to 0.0 = false, close to 1.0 = true): 0.01
+Should be: True
+Predicted answer: false (not racoon or fox)
+
+Predicting
+Predicting took 0.0 sec
+result (close to 0.0 = false, close to 1.0 = true): 0.59
+Should be: False
+Predicted answer: true (racoon or fox)
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Python 3.7.3 (/usr/bin/python3)
+>>> 

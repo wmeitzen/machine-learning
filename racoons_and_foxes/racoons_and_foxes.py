@@ -77,13 +77,13 @@ def define_model_vgg16_transfer():
 	model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 	return model
 
+
 # run the test harness for evaluating a model
 def run_test_harness(epochs, fit_generator_verbose, evaluate_generator_verbose):
 	# define model
 	#fit_generator_verbose = 1
 	#evaluate_generator_verbose = 1
 	model = define_model_vgg16_transfer()
-	#model = define_model_vgg16_transfer_out_shape()
 
 	datagen = ImageDataGenerator(featurewise_center=True)
 	# specify imagenet mean values for centering
@@ -363,20 +363,24 @@ processed_dataset_home = 'processed_images/'
 # generate the "final_model.h5"
 # Once the .h5 file is created, use the run_example function to see if an image is a fox/racoon or not
 # with a good PC and GPU, this process takes 10 min
-# with a good PC and no GPU, this process takes hours
+# with a good PC and no GPU, this process takes 2 hours
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1" # uncomment to avoid using a GPU
 
-initialize = True
-if initialize == True:
+initialize_images = False # process images
+initialize_harness = True # process harness
+
+if initialize_images == True:
 	now = datetime.now()
 	print (now.strftime("%Y-%m-%d %H:%M"))
 	delete_duplicate_images() # uncomment later
 	write_bw_blurred_images()
 	recreate_train_test_validate_images_subdirs()
+
+if initialize_images == True or initialize_harness == True:
 	# - epochs 4: seems best
-	run_test_harness(epochs=3, fit_generator_verbose = 1, evaluate_generator_verbose = 1)
-	run_finalize_harness(epochs=3, fit_generator_verbose = 1)
+	run_test_harness(epochs=4, fit_generator_verbose = 1, evaluate_generator_verbose = 1)
+	run_finalize_harness(epochs=4, fit_generator_verbose = 1)
 
 # load model
 model = load_model(f"final_model.h5")

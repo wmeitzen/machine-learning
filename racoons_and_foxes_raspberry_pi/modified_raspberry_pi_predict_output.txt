@@ -1,0 +1,29 @@
+Python 3.7.3 (/usr/bin/python3)
+>>> %Run modified_raspberry_pi_predict.py
+pygame 1.9.4.post1
+Hello from the pygame community. https://www.pygame.org/contribute.html
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+Predicting from image files.
+Predicting
+Predicting took 8.2 sec
+result (close to 0.0 = false, close to 1.0 = true): 1.0
+Should be: True
+Predicted answer: true (racoon or fox)
+
+Predicting
+Predicting took 8.2 sec
+result (close to 0.0 = false, close to 1.0 = true): 0.0
+Should be: False
+Predicted answer: false (not racoon or fox)
+
+Predicting
+Predicting took 8.1 sec
+result (close to 0.0 = false, close to 1.0 = true): 1.0
+Should be: True
+Predicted answer: true (racoon or fox)
+
+Predicting
+Predicting took 8.1 sec
+result (close to 0.0 = false, close to 1.0 = true): 0.02
+Should be: False
+Predicted answer: false (not racoon or fox)
